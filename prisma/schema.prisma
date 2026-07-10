@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Роли пользователя
+enum UserRole {
+  USER
+  ADMIN
+}
+
+// Статусы пользователя
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  DELETED
+}
+
+// Пользователь
+model User {
+  id           String @id @default(uuid()) @db.Uuid
+  email        String @unique @db.VarChar(254)
+  passwordHash String @db.Text
+
+  role   UserRole   @default(USER)
+  status UserStatus @default(ACTIVE)
+
+  emailVerifiedAt DateTime? @db.Timestamptz()
+  lastLoginAt     DateTime? @db.Timestamptz()
+  createdAt       DateTime  @default(now()) @db.Timestamptz()
+  updatedAt       DateTime  @updatedAt @db.Timestamptz()
+
+  refreshTokens RefreshToken[]
+  emailTokens   EmailToken[]
+  profile       UserProfile?
+
+  @@map("users")
+}
+
+// Профиль пользователя (расширение User)
+model UserProfile {
+  userId    String  @id @db.Uuid
+  firstName String? @db.VarChar(64)
+  phone     String? @db.VarChar(20)
+  avatarUrl String? @db.Text
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+// Refresh Token для JWT
+model RefreshToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @db.Text
+  expiresAt DateTime  @db.Timestamptz()
+  revokedAt DateTime? @db.Timestamptz()
+  createdAt DateTime  @default(now()) @db.Timestamptz()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, revokedAt])
+  @@index([tokenHash])
+  @@map("refresh_tokens")
+}
+
+enum EmailOperationType {
+  EMAIL_VERIFICATION
+  PASSWORD_CHANGE
+}
+
+// Email верификация и восстановление пароля
+model EmailToken {
+  id        String             @id @default(uuid()) @db.Uuid
+  userId    String             @db.Uuid
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      EmailOperationType
+  tokenHash String             @db.Text
+  expiresAt DateTime           @db.Timestamptz()
+  usedAt    DateTime?          @db.Timestamptz()
+  createdAt DateTime           @default(now()) @db.Timestamptz()
+
+  @@index([userId, type])
+  @@index([tokenHash, type])
+  @@map("email_tokens")
+}
+
+// Rate limit для ip
+model IpThrottle {
+  ip           String    @id @db.VarChar(45)
+  attempts     Int       @default(0)
+  blockedUntil DateTime? @db.Timestamptz()
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt @db.Timestamptz()
+
+  @@index([blockedUntil])
+  @@map("ip_throttles")
+}
+
+// Rate limit для email
+model EmailThrottle {
+  email        String    @id @db.VarChar(254)
+  attempts     Int       @default(0)
+  blockedUntil DateTime? @db.Timestamptz()
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt @db.Timestamptz()
+
+  @@index([blockedUntil])
+  @@map("email_throttles")
+}
