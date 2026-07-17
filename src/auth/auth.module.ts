@@ -1,14 +1,19 @@
 import { Module } from '@nestjs/common';
+
+import { CommonModule } from 'src/common';
+import { AppConfigModule, AppConfigProvider } from 'src/config';
+
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
 import {
   EmailThrottleRepository,
   EmailTokenRepository,
   IpThrottleRepository,
   RefreshTokenRepository,
-} from 'src/auth/repositories';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
+} from './repositories';
 
 @Module({
+  imports: [AppConfigModule, CommonModule],
   controllers: [AuthController],
   providers: [
     AuthService,
@@ -16,6 +21,7 @@ import { AuthService } from './auth.service';
     EmailTokenRepository,
     IpThrottleRepository,
     RefreshTokenRepository,
+    AppConfigProvider,
   ],
 })
 export class AuthModule {}
