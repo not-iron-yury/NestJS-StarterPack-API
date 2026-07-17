@@ -7,8 +7,8 @@ export type SecuritySection = {
 
 export type LoginProtectionSection = {
   readonly maxAttempts: number;
-  readonly windowMinutes: number;
-  readonly lockMinutes: number;
+  readonly attemptWindow: number;
+  readonly lockTime: number;
 };
 
 export type ThrottleSection = {
@@ -17,5 +17,5 @@ export type ThrottleSection = {
 };
 
 export type TokenLifetimeSection = {
-  readonly ttlHours: number;
+  readonly ttl: number;
 };

@@ -40,7 +40,7 @@ export const envSchema = z.object({
   LOCK_TIME_MINUTES: z.coerce.number().positive(),
 
   THROTTLE_LIMIT: z.coerce.number().positive(),
-  THROTTLE_TTL: z.coerce.number().positive(),
+  THROTTLE_TTL_SECONDS: z.coerce.number().positive(),
 
   EMAIL_VERIFICATION_TTL_HOURS: z.coerce.number().positive(),
   PASSWORD_RESET_TTL_HOURS: z.coerce.number().positive(),

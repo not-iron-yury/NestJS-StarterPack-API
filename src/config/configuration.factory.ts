@@ -12,6 +12,8 @@ import {
   UrlsSection,
 } from 'src/config/types';
 
+// ВАЖНО! Все временные значения (часы, дни) трансформируются в секунды
+
 export function createConfiguration(env: Env): AppConfig {
   const app = createAppSection(env);
 
@@ -75,12 +77,12 @@ function createJwtSection(env: Env): JwtSection {
   return {
     access: {
       secret: env.JWT_ACCESS_SECRET,
-      expiresIn: env.JWT_ACCESS_EXPIRES_MINUTES * 60,
+      expiresIn: env.JWT_ACCESS_EXPIRES_MINUTES * 60, // минуты в секунды
     },
 
     refresh: {
       secret: env.JWT_REFRESH_SECRET,
-      expiresIn: env.JWT_REFRESH_EXPIRES_DAYS * 24 * 60 * 60,
+      expiresIn: env.JWT_REFRESH_EXPIRES_DAYS * 24 * 60 * 60, // дни в секунды
     },
   };
 }
@@ -112,23 +114,23 @@ function createSecuritySection(env: Env): SecuritySection {
     login: {
       maxAttempts: env.LOGIN_MAX_ATTEMPTS,
 
-      windowMinutes: env.LOGIN_ATTEMPT_WINDOW_MINUTES,
+      attemptWindow: env.LOGIN_ATTEMPT_WINDOW_MINUTES * 60, // минуты в секунды
 
-      lockMinutes: env.LOCK_TIME_MINUTES,
+      lockTime: env.LOCK_TIME_MINUTES * 60, // минуты в секунды
     },
 
     throttle: {
       limit: env.THROTTLE_LIMIT,
 
-      ttl: env.THROTTLE_TTL,
+      ttl: env.THROTTLE_TTL_SECONDS, // уже в секундах
     },
 
     emailVerification: {
-      ttlHours: env.EMAIL_VERIFICATION_TTL_HOURS,
+      ttl: env.EMAIL_VERIFICATION_TTL_HOURS * 60 * 60, // часы в секунды
     },
 
     passwordReset: {
-      ttlHours: env.PASSWORD_RESET_TTL_HOURS,
+      ttl: env.PASSWORD_RESET_TTL_HOURS * 60 * 60, // часы в секунды
     },
   };
 }
