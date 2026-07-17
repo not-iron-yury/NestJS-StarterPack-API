@@ -1,3 +1,4 @@
+import { API_ROUTES } from 'src/common/constants/api-routes';
 import { Env } from './env.schema';
 
 import {
@@ -97,7 +98,9 @@ function createCookieSection(
 
       secure: app.environment === 'production',
 
-      sameSite: 'lax',
+      sameSite: 'strict',
+
+      path: `${app.apiPrefix}${API_ROUTES.auth}`,
 
       maxAge: jwt.refresh.expiresIn * 1000,
     },
