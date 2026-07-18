@@ -5,9 +5,8 @@ import { AppConfigModule, AppConfigProvider } from 'src/config';
 
 import { JwtService } from '@nestjs/jwt';
 import { PasswordService } from 'src/common/services';
+import { UserModule, UserService } from 'src/user';
 import { UserRepository } from 'src/user/repositories';
-import { UserModule } from 'src/user/user.module';
-import { UserService } from 'src/user/user.service';
 import { AuthController } from './auth.controller';
 import {
   EmailThrottleRepository,
@@ -15,7 +14,12 @@ import {
   IpThrottleRepository,
   RefreshTokenRepository,
 } from './repositories';
-import { RateLimitService, TokenService } from './services';
+import {
+  AuthService,
+  CookieService,
+  RateLimitService,
+  TokenService,
+} from './services';
 
 @Module({
   imports: [AppConfigModule, CommonModule, UserModule],
@@ -28,6 +32,8 @@ import { RateLimitService, TokenService } from './services';
     RateLimitService,
     TokenService,
     JwtService,
+    AuthService,
+    CookieService,
 
     UserRepository,
     RefreshTokenRepository,
